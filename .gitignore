@@ -1,0 +1,140 @@
+# TYPESCRIPT WEB .gitignore
+#
+# Created and curated by Nazator
+# https://nazator.com
+# https://github.com/nazator/hyperedge
+
+# === GLOBAL / UNIVERSAL ===
+
+# Environment variables
+.env
+.env.*
+.env.*.local
+.env.local
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.old
+*.orig
+
+# Logs
+*.log
+logs/
+log/
+
+# Coverage & reports
+coverage/
+*.lcov
+*.clover
+*.coverage
+.coverage.*
+
+# Cache
+.cache/
+.cache-loader/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# === OS-SPECIFIC ===
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# === IDEs / EDITORS ===
+
+# JetBrains
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
+Session.vim
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# === NODE / JS / TS ECOSYSTEM ===
+
+node_modules/
+dist/
+build/
+.output/
+.turbo/
+.nx/
+.vercel/
+.netlify/
+.wrangler/
+.vinxi/
+.astro/
+
+# TypeScript
+*.tsbuildinfo
+
+# Package managers
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock
+pnpm-lock.yaml
+bun.lock
+bun.lockb
+shrinkwrap.yaml
+
+# === TEST / BENCH / PROFILING ===
+
+*.prof
+*.perf
+*.trace
+*.bench
+
+# === CI / TOOLING ===
+
+# Turbo / Nx
+.turbo/
+.nx/
+
+# Kazra tooling
+.rigra
+.pakra
+
+# Wakatime
+.wakatime-project
+
+# === CUSTOM / PROJECT-SPECIFIC ===
+
+# Misc
+.temp/
+.tmp/
+temp/
+tmp/
