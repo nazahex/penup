@@ -70,7 +70,7 @@ describe("PathResolver", () => {
   describe("toGlobPattern()", () => {
     test("should convert variables to glob wildcards", () => {
       const glob = resolver.toGlobPattern("./src/books/[category]/[collection_id]/[...slug].md")
-      expect(glob).toBe("./src/books/*/*/**.md")
+      expect(glob).toBe("./src/books/*/*/**/*.md") // ← Updated: **.md → **/*.md
     })
   })
 })
