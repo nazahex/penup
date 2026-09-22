@@ -1,0 +1,52 @@
+# TYPESCRIPT WEB EDITORCONFIG
+#
+# Created and curated by Nazator
+# https://nazator.com
+# https://github.com/nazator/hyperedge
+
+
+root = true
+
+# DEFAULT (ALL FILES)
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+indent_style = space
+indent_size = 2
+max_line_length = 100
+
+# MARKDOWN / TEXT
+[*.md,*.mdx]
+trim_trailing_whitespace = false
+max_line_length = off
+
+[*.{txt,adoc,rst}]
+max_line_length = off
+
+# YAML / TOML / JSON
+[*.{yml,yaml,toml,json,jsonc}]
+indent_style = space
+indent_size = 2
+
+# JAVASCRIPT / TYPESCRIPT
+[*.{js,cjs,mjs,jsx,ts,cts,mts,tsx}]
+indent_style = space
+indent_size = 2
+
+# HTML / CSS / XML
+[*.{html,htm,css,scss,sass,less,xml}]
+indent_style = space
+indent_size = 2
+
+# SHELL
+[*.{sh,bash,zsh,fish}]
+indent_style = space
+indent_size = 2
+
+# CONFIG / CI
+[*.{ini,conf,properties,editorconfig}]
+indent_style = space
+indent_size = 2
