@@ -36,6 +36,17 @@ export class Pipeline {
     this.config = config
     this.resolver = resolver
     this.transformerRegistry = transformerRegistry
+
+    // Auto-register custom transformers from config.
+    // This ensures programmatic API usage matches CLI behavior.
+    if (config.transformers) {
+      for (const [name, definition] of Object.entries(config.transformers)) {
+        if (!this.transformerRegistry.has(name)) {
+          this.transformerRegistry.register(definition)
+        }
+      }
+    }
+
     this.initializeTasks()
   }
 
@@ -112,6 +123,12 @@ export class Pipeline {
         result.taskResults.push(taskResult)
         result.tasksExecuted++
         result.errors.push(...taskResult.errors)
+
+        // Fail-fast: stop pipeline if task has errors and failFast is enabled
+        const isFailFast = task.config.failFast ?? task.config.mode === "validate"
+        if (taskResult.errors.length > 0 && isFailFast) {
+          break
+        }
       }
     } catch (error) {
       result.errors.push(error instanceof Error ? error : new Error(String(error)))

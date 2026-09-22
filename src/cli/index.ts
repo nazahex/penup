@@ -8,6 +8,8 @@ import { loadConfig } from "../config/loader.ts"
 import { PathResolver } from "../core/pathResolver.ts"
 import { Pipeline } from "../core/pipeline.ts"
 import { logger } from "../logger.ts"
+import { aggregationTransformers } from "../transformers/aggregation.ts"
+import { createFileCopyTransformer, createFileRenameTransformer } from "../transformers/file.ts"
 import { frontmatterTransformers } from "../transformers/frontmatter.ts"
 import { TransformerRegistry } from "../transformers/registry.ts"
 
@@ -22,15 +24,26 @@ async function initPipeline(configPath?: string): Promise<Pipeline> {
   registry.register(frontmatterTransformers.extract)
   registry.register(frontmatterTransformers.inject)
 
+  // Register aggregate & emit built-in transformers
+  for (const definition of Object.values(aggregationTransformers)) {
+    registry.register(definition)
+  }
+
+  registry.register(createFileRenameTransformer(resolver))
+  registry.register(createFileCopyTransformer(resolver))
+
   // Register custom transformers from config
   if (config.transformers) {
     const customNames: string[] = []
-    for (const [name, definition] of Object.entries(config.transformers)) {
-      if (!registry.has(name)) {
+    for (const [_name, definition] of Object.entries(config.transformers)) {
+      // FIX: Use definition.name instead of object key 'name' to prevent duplicate registration
+      if (!registry.has(definition.name)) {
         registry.register(definition)
-        customNames.push(name)
+        customNames.push(definition.name)
       } else {
-        logger.warn(`Custom transformer "${name}" conflicts with built-in. Using built-in.`)
+        logger.warn(
+          `Custom transformer "${definition.name}" conflicts with built-in. Using built-in.`,
+        )
       }
     }
     if (customNames.length > 0) {
@@ -154,11 +167,21 @@ program
 
       if (result.errors.length > 0) {
         logger.warn(`Completed with ${result.errors.length} error(s)`)
-        if (options.verbose) {
+
+        // Always print errors for validate mode or when failFast is enabled.
+        // For other modes, require --verbose flag.
+        const task = pipeline.getTask(taskName)
+        const shouldShowErrors =
+          options.verbose || task?.config.mode === "validate" || task?.config.failFast === true
+
+        if (shouldShowErrors) {
           for (const error of result.errors) {
             logger.errorDetail(error, taskName)
           }
+        } else {
+          console.log(`\x1b[38;5;8m› Run with -v to see error details\x1b[0m`)
         }
+
         process.exit(1)
       } else {
         logger.success(`Task "${taskName}" completed`)

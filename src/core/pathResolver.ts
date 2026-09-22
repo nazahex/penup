@@ -258,6 +258,16 @@ export class PathResolver {
     let result = pattern
     result = result.replace(/\[\.{3}\w+\]/g, "**")
     result = result.replace(/\[\w+\]/g, "*")
+
+    // Normalize consecutive ** which Bun's Glob cannot handle.
+    // e.g. "**/**" → "**" (two rest variables in a row)
+    result = result.replace(/\*\*\/\*\*/g, "**")
+
+    // Fix: "**" directly followed by a literal (no slash) breaks recursive scanning.
+    // e.g. "**.jsx" → "**\/*.jsx"
+    // e.g. "**foo" → "**\/*foo"
+    result = result.replace(/\*\*([^/*\s])/g, "**/*$1")
+
     return result
   }
 }

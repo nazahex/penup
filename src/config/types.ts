@@ -71,6 +71,10 @@ export interface Context {
   setMetadata(key: string, value: unknown): void
   getMetadata<T = unknown>(key: string): T | undefined
   getAllMetadata(): Record<string, unknown>
+  pushToAggregate(data: unknown): void
+  getAggregateData(): unknown[]
+  addValidationError(error: Error): void
+  getValidationErrors(): Error[]
   extend(additionalVariables: VariableMap): Context
   clone(): Context
 }
@@ -147,15 +151,27 @@ export interface TaskOutputConfig {
 }
 
 /**
+ * The mode of a task.
+ * - "transform": Process and transform input files.
+ * - "aggregate": Combine multiple inputs into a single output.
+ * - "validate": Check the validity of input or output data.
+ */
+export type TaskMode = "transform" | "aggregate" | "validate"
+
+/**
  * Configuration for a single task in the pipeline.
  */
 export interface TaskConfig {
   /** Source file pattern with dynamic variables */
   source: string
+  /** Mode of the task (default: "transform") */
+  mode?: TaskMode
   /** Output configuration (optional, for transformers that produce files) */
   output?: TaskOutputConfig
   /** List of transformer steps to apply */
   transforms?: TransformerStep[]
+  /** List of transformer steps to apply after aggregation (for aggregate mode). Executed once per group after aggregation. */
+  aggregateTransforms?: TransformerStep[]
   /** Names of tasks this task depends on */
   dependsOn?: string[]
   /** Whether this task can run in parallel with others */
@@ -169,6 +185,8 @@ export interface TaskConfig {
     /** Whether to fail on validation error */
     strict?: boolean
   }
+  /** Whether to stop the pipeline if this task produces errors */
+  failFast?: boolean
   /** Human-readable description */
   description?: string
 }
