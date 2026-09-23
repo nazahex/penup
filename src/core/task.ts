@@ -288,7 +288,11 @@ export class Task {
             const contextOptions = buildContextOptions(
               { filePath: file.filePath, variables: file.variables },
               options,
-              { aggregateStore, validationErrors },
+              {
+                aggregateStore,
+                validationErrors,
+                ...(this.config.vars !== undefined ? { taskVars: this.config.vars } : {}),
+              },
             )
             const context = new Context(contextOptions)
 
@@ -319,7 +323,11 @@ export class Task {
             const emitContextOptions = buildContextOptions(
               { filePath: outputPath, variables: groupVariables },
               options,
-              { aggregateStore, validationErrors },
+              {
+                aggregateStore,
+                validationErrors,
+                ...(this.config.vars !== undefined ? { taskVars: this.config.vars } : {}),
+              },
             )
             const emitContext = new Context(emitContextOptions)
 
@@ -347,7 +355,10 @@ export class Task {
           const contextOptions = buildContextOptions(
             { filePath: file.filePath, variables: file.variables },
             options,
-            { validationErrors },
+            {
+              validationErrors,
+              ...(this.config.vars !== undefined ? { taskVars: this.config.vars } : {}),
+            },
           )
           const context = new Context(contextOptions)
 
@@ -409,6 +420,7 @@ export class Task {
       const contextOptions = buildContextOptions(
         { filePath: matchResult.filePath, variables: matchResult.variables },
         options,
+        this.config.vars !== undefined ? { taskVars: this.config.vars } : undefined,
       )
       const context = new Context(contextOptions)
 

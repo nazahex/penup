@@ -8,6 +8,7 @@ import type { Context as ContextInterface, VariableMap } from "../config/types"
 export interface ContextOptions {
   filePath: string
   variables?: VariableMap
+  taskVars?: VariableMap
   globals?: VariableMap
   cwd?: string
   /** Shared aggregate store reference for aggregate mode */
@@ -19,6 +20,7 @@ export interface ContextOptions {
 export class Context implements ContextInterface {
   readonly filePath: string
   readonly variables: VariableMap
+  readonly taskVars: VariableMap
   readonly globals: VariableMap
   readonly cwd: string
   private metadataStore: Record<string, unknown> = {}
@@ -27,6 +29,7 @@ export class Context implements ContextInterface {
 
   constructor(options: ContextOptions) {
     this.filePath = options.filePath
+    this.taskVars = { ...options.taskVars }
     this.variables = { ...options.variables }
     this.globals = { ...options.globals }
     this.cwd = options.cwd ?? process.cwd()
@@ -36,8 +39,13 @@ export class Context implements ContextInterface {
   }
 
   getVariable(name: string): string | string[] | undefined {
-    const value = this.variables[name]
-    if (value !== undefined) return value
+    // Priority: Path variables > Task vars > Global vars
+    const pathValue = this.variables[name]
+    if (pathValue !== undefined) return pathValue
+
+    const taskValue = this.taskVars[name]
+    if (taskValue !== undefined) return taskValue
+
     return this.globals[name]
   }
 
@@ -46,7 +54,7 @@ export class Context implements ContextInterface {
   }
 
   getAllVariables(): VariableMap {
-    return { ...this.globals, ...this.variables }
+    return { ...this.globals, ...this.taskVars, ...this.variables }
   }
 
   setMetadata(key: string, value: unknown): void {
@@ -81,6 +89,7 @@ export class Context implements ContextInterface {
     return new Context({
       filePath: this.filePath,
       variables: { ...this.variables, ...additionalVariables },
+      taskVars: this.taskVars,
       globals: this.globals,
       cwd: this.cwd,
       aggregateStore: this.aggregateStore,
@@ -92,6 +101,7 @@ export class Context implements ContextInterface {
     const cloned = new Context({
       filePath: this.filePath,
       variables: this.variables,
+      taskVars: this.taskVars,
       globals: this.globals,
       cwd: this.cwd,
       aggregateStore: this.aggregateStore,

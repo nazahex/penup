@@ -59,6 +59,8 @@ export interface Context {
   filePath: string
   /** Variables extracted from the source path */
   variables: VariableMap
+  /** Variables specific to the current task */
+  taskVars: VariableMap
   /** Global variables from config */
   globals: VariableMap
   /** Working directory */
@@ -174,6 +176,8 @@ export interface TaskConfig {
   aggregateTransforms?: TransformerStep[]
   /** Names of tasks this task depends on */
   dependsOn?: string[]
+  /** Variables specific to the current task */
+  vars?: VariableMap
   /** Whether this task can run in parallel with others */
   parallel?: boolean
   /** Condition for running this task */
